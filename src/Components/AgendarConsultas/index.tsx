@@ -1,88 +1,105 @@
-import { useContext, useState } from "react"
+import { Box, Button, Card, Container, MenuItem, Select, TextField } from "@mui/material"
 import { ConsultasContext } from "../../context/ConsultasContext"
-import { Container, Box, Card, TextField, Button, Select, MenuItem } from "@mui/material"
+import {useContext, useState} from 'react'
+import {addMinutes, setHours, setMinutes } from "date-fns"
 
-export function AgendarConsultas() {
+export default function AgendarConsulta() {
 
-    const { doutores, agendarConsulta, consultas } = useContext(ConsultasContext)
+   const {consultas, doutores, agendarConsulta} = useContext(ConsultasContext)
 
-    const [data, setData] = useState('')
-    const [nomePaciente, setNomePaciente] = useState('')
-    const [numTelefone, setNumTelefone] = useState('')
-    const [emailDoutor, setEmailDoutor] = useState('')
-    const [time, setTime] = useState('08:00')
+   const [data, setData] = useState('')
+   const [nomePaciente, setNomePaciente] = useState('')
+   const [numeroTel, setNumeroTel] = useState('')
+   const [emailDoutor, setEmailDoutor] = useState('')
+   const [time, setTime] = useState('08:00')
 
-
-    const horarios = []
-
-    for (let i = 8; i < 18; i++) {
-        horarios.push(i < 10 ? `0${i}:00` : `${i}:00`)
-    }
-
-    function handleSubmit(e: React.FormEvent) {
+    const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault()
-        agendarConsulta!({ id: consultas?.length || 0, nomePaciente, numTelefone, emailDoutor, data: '' })
+        const dataAtual = new Date(data)
+        const [horas, minutos] = time.split(':')
+        const dataComHora = setMinutes(setHours(dataAtual, Number(horas)), Number(minutos))
+        const fusoHorario = dataComHora.getTimezoneOffset();
+        const dataUTC = addMinutes(dataComHora, fusoHorario).toISOString();
+        console.log(dataUTC);
+        
+        
+        agendarConsulta!({ id:consultas?.length , nomePaciente, numeroTel, emailDoutor, data: dataUTC  })
+        setData('');
+        setNomePaciente('');
+        setNumeroTel('');
+        setEmailDoutor('');
+        setTime('08:00');
+
+    
     }
-
+    
+    const horarios = []
+    for( let i = 8; i< 18; i++){
+        horarios.push(i< 10 ? `0${i}:00` : `${i}:00`)
+    }
+   //console.log(doutores)
     return (
-        <>
-            <Container maxWidth="sm">
-                <Box
-                    display="flex"
-                    alignItems="center"
-                    justifyContent="center"
-                    minHeight="100vh"
-                >
-                    <Card elevation={3} sx={{ padding: 4, borderRadius: 2 }}>
-                        <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
+        <Container maxWidth="sm">
+            <Box
+                display="flex"
+                justifyContent="center"
+                alignItems="center"
+                minHeight="100vh"
+            >
+                <Card elevation={3} sx={{ padding: 4, borderRadious: 2 }}>
+                    <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: "column", gap: "10px" }}>
+                        <TextField
+                            label="Nome do Paciente"
+                            type="text"
+                            value={nomePaciente}
+                            onChange={(e => setNomePaciente(e.target.value))}
 
-                            <TextField
-                                label="Nome do Paciente"
-                                type="text"
-                                value={nomePaciente}
-                                onChange={(e) => setNomePaciente(e.target.value)}
-                            ></TextField>
+                        />
+                        <TextField
+                            label="Telefone"
+                            type="tel"
+                            value={numeroTel}
+                            onChange={(e => setNumeroTel(e.target.value))}
 
-                            <TextField
-                                label="Telefone"
-                                type="tel"
-                                value={numTelefone}
-                                onChange={(e) => setNumTelefone(e.target.value)}
-                            ></TextField>
+                        />
+                        <TextField
+                            label="Data"
+                            type="date"
+                            value={data}
+                            onChange={(e => setData(e.target.value))}
 
-                            <TextField
-                                label="data"
-                                type="date"
-                                value={data}
-                                onChange={(e) => setData(e.target.value)}
-                            ></TextField>
+                        />
+                        <Select
+                            value={time}
+                            onChange={e => setTime(e.target.value)}
+                        >
+                            {horarios.map((hora, index) => (
+                                <MenuItem key={index} value={hora}>
+                                    {hora}
+                                </MenuItem>
+                            ))}
+                        </Select>
 
-                            <Select>
-                                {horarios?.map((horario, index) => (
-                                    <MenuItem key={index} value={horario}>
-                                        {horario}
-                                    </MenuItem>
-                                ))}
-                            </Select>
+                        <Select
+                            value={emailDoutor}
+                            onChange={ e => setEmailDoutor(e.target.value)
+                            }
+                    
+                        >
+                            {doutores?.map ((doutor, index) =>
+                                <MenuItem key={index} value={doutor.email} >
+                                {doutor.email}
+                                </MenuItem>
+                                )}
+                        </Select>
+                        <Button  type="submit">
+                            Agendar
+                        </Button>
+                    </form>
+                </Card>
 
+            </Box>
+        </Container>
 
-                            <Select
-                                value={emailDoutor}
-                                onChange={(e) => setEmailDoutor(e.target.value)}>
-
-                                {doutores?.map((doutor, index) => (
-                                    <MenuItem key={index} value={doutor.email}>
-                                        {doutor.email}
-                                    </MenuItem>
-                                ))}
-                            </Select>
-
-                            <Button type="submit">Enviar</Button>
-                        </form>
-                    </Card>
-
-                </Box>
-            </Container>
-        </>
     )
 }

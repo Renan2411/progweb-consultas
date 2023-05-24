@@ -1,69 +1,64 @@
-import './App.css'
-import { BrowserRouter, Route, Routes, Link } from 'react-router-dom'
-import { CadastrarMedicos } from './Components/CadastrarMedicos'
-import { AgendarConsultas } from './Components/AgendarConsultas'
-import { ListarConsultas } from './Components/ListarConsultas'
-import { Box, Button } from '@mui/material'
-import { ConsultasProvider } from './context/ConsultasContext'
+import { BrowserRouter, Route, Routes, Link as RouterLink } from "react-router-dom";
+import { Box, Button } from "@mui/material";
+import { ConsultasContext, ConsultasProvider } from "./context/ConsultasContext";
+import CadastrarMedicos from "./Components/CadastrarMedicos";
+import ListarConsultas from "./Components/ListarConsultas";
+import AgendarConsulta from "./Components/AgendarConsultas";
+import { useContext, useEffect } from "react";
+
+
 
 function App() {
   return (
-    <>
+    <ConsultasProvider>
+      <BrowserRouter>
+        <Box
+          display="flex"
+          flexDirection="column"
+          alignItems="center"
+          justifyContent="center"
+          style={{ minHeight: '100vh', textAlign: 'center' }}>
 
-
-      <ConsultasProvider>
-        <BrowserRouter>
+          <nav>
+            <Button
+              component={RouterLink}
+              to="/cadastrar"
+              variant="contained"
+              color="primary"
+              style={{ marginRight: '10px' }}
+            >
+              Cadastrar Médicos
+            </Button>
+            <Button
+              component={RouterLink}
+              to="/agendar"
+              variant="contained"
+              color="primary"
+              style={{ marginRight: '10px' }}
+            >
+              Agendar Consultas
+            </Button>
+            <Button
+              component={RouterLink}
+              to="/listar"
+              variant="contained"
+              color="primary"
+              style={{ marginRight: '10px' }}
+            >
+              Listar Consultas
+            </Button>
+          </nav>
 
           <Routes>
-            <Route path='/cadastrar' element={<CadastrarMedicos />}></Route>
-            <Route path='/agendar' element={<AgendarConsultas />}></Route>
-            <Route path='/listar' element={<ListarConsultas />}></Route>
+            <Route path="/cadastrar" element={<CadastrarMedicos />} />
+            <Route path="/agendar" element={<AgendarConsulta />} />
+            <Route path="/listar" element={<ListarConsultas />} />
           </Routes>
-
-          <Box
-            display="flex"
-            flexDirection="column"
-            alignItems="center"
-            justifyContent="center"
-            style={{ minHeight: '100vh', textAlign: 'center' }}>
-
-            <nav>
-              <Button
-                component={Link}
-                to="/cadastrar"
-                variant="contained"
-                color="primary"
-                style={{ marginRight: '1-px' }}>
-                Cadastrar
-              </Button>
-
-              <Button
-                component={Link}
-                to="/agendar"
-                variant="contained"
-                color="primary"
-                style={{ marginRight: '1-px' }}>
-                Agendar
-              </Button>
-
-              <Button
-                component={Link}
-                to="/listar"
-                variant="contained"
-                color="primary"
-                style={{ marginRight: '1-px' }}>
-                Listar
-              </Button>
-            </nav>
-
-          </Box>
-
-
-        </BrowserRouter>
-      </ConsultasProvider>
-
-    </>
+        </ Box>
+      </BrowserRouter >
+    </ConsultasProvider>
   )
 }
 
 export default App
+
